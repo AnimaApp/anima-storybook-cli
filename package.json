@@ -1,0 +1,52 @@
+{
+  "name": "anima-storybook-cli",
+  "version": "0.0.1",
+  "description": "Anima developer-friendly CLI",
+  "main": "./build/cli.js",
+  "bin": {
+    "anima-storybook": "./build/cli.js"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "files": [
+    "/assets",
+    "/build"
+  ],
+  "keywords": [
+    "cli"
+  ],
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "format": "prettier --loglevel warn --write \"**/*.{ts,js,json,yaml}\"",
+    "format:check": "prettier --loglevel warn --check \"**/*.{ts,js,json,yaml}\"",
+    "lint": "eslint \"src/**/*.ts\" --fix",
+    "lint:check": "eslint \"src/**/*.ts\""
+  },
+  "dependencies": {
+    "@types/node-fetch": "^2.6.2",
+    "archiver": "^5.3.1",
+    "c12": "^0.2.13",
+    "chalk": "4.1.1",
+    "form-data": "^4.0.0",
+    "fs-extra": "10.0.0",
+    "node-fetch": "2",
+    "ora": "^5.4.1",
+    "pkg-types": "^0.3.5",
+    "yargs": "17.0.1"
+  },
+  "devDependencies": {
+    "@types/archiver": "^5.3.1",
+    "@types/fs-extra": "9.0.12",
+    "@types/node": "^18.11.5",
+    "@types/yargs": "17.0.2",
+    "@typescript-eslint/eslint-plugin": "4.28.2",
+    "@typescript-eslint/parser": "4.28.2",
+    "eslint": "7.30.0",
+    "eslint-config-prettier": "8.3.0",
+    "prettier": "2.3.2",
+    "typescript": "4.3.5"
+  }
+}
