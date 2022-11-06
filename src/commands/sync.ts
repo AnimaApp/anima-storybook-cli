@@ -112,7 +112,10 @@ export const handler = async (_argv: Arguments): Promise<void> => {
     skipUpload = false;
     const uploadResponse = await uploadBuffer(uploadUrl, zipBuffer);
     const upload_status = uploadResponse.status === 200 ? 'complete' : 'failed';
-    await updateStorybook(token, storybookId, { upload_status });
+    await updateStorybook(token, storybookId, {
+      upload_status,
+      preload_stories: true,
+    });
   }
 
   loader.stop();

@@ -1,7 +1,7 @@
 {
   "name": "anima-storybook-cli",
   "version": "0.0.1",
-  "description": "Anima developer-friendly CLI",
+  "description": "Anima CLI for storybook",
   "main": "./build/cli.js",
   "bin": {
     "anima-storybook": "./build/cli.js"
