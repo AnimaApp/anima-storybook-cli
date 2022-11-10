@@ -20,24 +20,25 @@ export const builder: CommandBuilder = (yargs) =>
       token: { type: 'string', alias: 't' },
       debug: { type: 'boolean', alias: 'd' },
       buildCommand: { type: 'string', alias: 'b' },
+      designTokens: { type: 'string', alias: 'dt' },
     })
     .example([['$0 sync -f <filepath>']]);
 
 export const handler = async (_argv: Arguments): Promise<void> => {
   const __DEBUG__ = !!_argv.debug;
 
-  const [config, pkg] = await Promise.all([
+  const [animaConfig, pkg] = await Promise.all([
     loadAnimaConfig(),
     loadPackageJSON(),
   ]);
 
   const token = (_argv.token ??
-    config?.access_token ??
+    animaConfig?.access_token ??
     process.env.STORYBOOK_ANIMA_TOKEN ??
     '') as string;
 
   const buildCommand = (_argv.buildCommand ??
-    config?.build_command ??
+    animaConfig?.build_command ??
     DEFAULT_BUILD_COMMAND) as string;
 
   if (__DEBUG__) {
@@ -45,11 +46,17 @@ export const handler = async (_argv: Arguments): Promise<void> => {
     console.log('token =>', token);
   }
 
-  let stage = 'Validating token';
+  let stage = 'Checking local environment';
   let loader = ora(`${stage}...`).start();
 
   if (!token) {
     throw new Error('No Storybook token provided');
+  }
+
+  if (!(buildCommand in (pkg?.scripts ?? {}))) {
+    throw new Error(
+      `The build command "${buildCommand}" was not found in package.json. Example: "build-storybook": "build-storybook"`,
+    );
   }
 
   const response = await authenticate(token);
@@ -62,12 +69,6 @@ export const handler = async (_argv: Arguments): Promise<void> => {
   console.log('\x1b[32m%s\x1b[0m', `  - ${stage} ... OK`);
 
   stage = 'Building Storybook';
-
-  if (!(buildCommand in (pkg?.scripts ?? {}))) {
-    throw new Error(
-      `The build command "${buildCommand}" was not found in package.json. Example: "build-storybook": "build-storybook"`,
-    );
-  }
 
   setupTempDirectory('.anima', { __DEV__: __DEBUG__ });
   const BUILD_DIR = getBuildDir();
@@ -102,7 +103,17 @@ export const handler = async (_argv: Arguments): Promise<void> => {
 
   let skipUpload = true;
 
-  const data = await getOrCreateStorybook(token, zipHash);
+  let designTokens: Record<string, any> = animaConfig.design_tokens ?? {};
+
+  try {
+    const designTokenFilePath = _argv.designTokens as string | undefined;
+    if (designTokenFilePath && fs.existsSync(designTokenFilePath)) {
+      designTokens = await fs.readJSON(designTokenFilePath);
+    }
+    // eslint-disable-next-line no-empty
+  } catch (error) {}
+
+  const data = await getOrCreateStorybook(token, zipHash, designTokens);
 
   const { storybookId, uploadUrl, uploadStatus } = data;
 
