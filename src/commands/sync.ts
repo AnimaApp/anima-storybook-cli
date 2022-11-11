@@ -10,6 +10,7 @@ import {
 } from '../helpers/build';
 import { authenticate, getOrCreateStorybook, updateStorybook } from '../api';
 import { zipDir, hashBuffer, uploadBuffer } from '../helpers';
+import chalk from 'chalk';
 
 export const command = 'sync';
 export const desc = 'Sync Storybook to Figma using Anima';
@@ -20,6 +21,9 @@ export const builder: CommandBuilder = (yargs) =>
       token: { type: 'string', alias: 't' },
       debug: { type: 'boolean', alias: 'd' },
       buildCommand: { type: 'string', alias: 'b' },
+      skipBuild: { type: 'boolean', alias: 'sb' },
+      silent: { type: 'boolean', alias: 's' },
+      buildDir: { type: 'string', alias: 'bd' },
       designTokens: { type: 'string', alias: 'dt' },
     })
     .example([['$0 sync -f <filepath>']]);
@@ -66,26 +70,35 @@ export const handler = async (_argv: Arguments): Promise<void> => {
     throw new Error('Storybook token is invalid');
   }
 
-  console.log('\x1b[32m%s\x1b[0m', `  - ${stage} ... OK`);
+  chalk.green(console.log(`  - ${stage} ... OK`));
 
   stage = 'Building Storybook';
 
   setupTempDirectory('.anima', { __DEV__: __DEBUG__ });
-  const BUILD_DIR = getBuildDir();
+  const BUILD_DIR = getBuildDir(_argv.buildDir as string | undefined);
   let skipBuild = false;
 
-  if (__DEBUG__ && fs.existsSync(BUILD_DIR)) {
-    skipBuild = true;
+  if (__DEBUG__ || !!_argv.skipBuild) {
+    if (fs.existsSync(BUILD_DIR)) {
+      skipBuild = true;
+    } else {
+      chalk.yellow(
+        console.log(
+          `Cannot skip build, cannot find build directory: ${BUILD_DIR}}`,
+        ),
+      );
+    }
   }
 
   if (!skipBuild) {
-    await buildStorybook(buildCommand);
+    try {
+      await buildStorybook(buildCommand, !!_argv.silent);
+    } catch (error) {
+      throw new Error(`Failed to build Storybook`);
+    }
   }
 
-  console.log(
-    '\x1b[32m%s\x1b[0m',
-    `  - ${stage} ... ${skipBuild ? 'SKIP' : 'OK'} `,
-  );
+  chalk.green(console.log(`  - ${stage} ... ${skipBuild ? 'SKIP' : 'OK'} `));
 
   stage = 'Preparing files';
   loader = ora(`${stage}...`).start();
@@ -96,7 +109,7 @@ export const handler = async (_argv: Arguments): Promise<void> => {
   __DEBUG__ && console.log('generated hash =>', zipHash);
 
   loader.stop();
-  console.log('\x1b[32m%s\x1b[0m', `  - ${stage} ... OK`);
+  chalk.green(console.log(`  - ${stage} ... OK`));
 
   stage = 'Syncing files';
   loader = ora(`${stage}...`).start();
@@ -130,12 +143,9 @@ export const handler = async (_argv: Arguments): Promise<void> => {
   }
 
   loader.stop();
-  console.log(
-    '\x1b[32m%s\x1b[0m',
-    `  - ${stage} ...  ${skipUpload ? 'SKIP' : 'OK'}`,
-  );
+  chalk.green(console.log(`  - ${stage} ...  ${skipUpload ? 'SKIP' : 'OK'}`));
 
-  console.log('\x1b[32m%s\x1b[0m', '  - Done');
+  chalk.green(console.log('  - Done'));
 
   if (__DEBUG__) {
     console.log('_id =>', storybookId);

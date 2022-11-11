@@ -5,13 +5,16 @@ import fs from 'fs-extra';
 export const DEFAULT_BUILD_COMMAND = 'build-storybook';
 const DEFAULT_BUILD_DIR = 'storybook-static';
 
-export const buildStorybook = (command?: string): Promise<void> => {
+export const buildStorybook = (
+  command?: string,
+  silent = false,
+): Promise<void> => {
   return new Promise((resolve, reject) => {
     const buildCommand = command ?? DEFAULT_BUILD_COMMAND;
 
     const result = spawn('npm', ['run', buildCommand], {
       cwd: process.cwd(),
-      stdio: 'inherit',
+      stdio: silent ? 'ignore' : 'inherit',
     });
 
     result.on('close', (code) => {
@@ -24,8 +27,8 @@ export const buildStorybook = (command?: string): Promise<void> => {
   });
 };
 
-export const getBuildDir = (): string => {
-  return path.join(process.cwd(), DEFAULT_BUILD_DIR);
+export const getBuildDir = (buildDir?: string): string => {
+  return path.join(process.cwd(), buildDir ?? DEFAULT_BUILD_DIR);
 };
 
 export const setupTempDirectory = (
