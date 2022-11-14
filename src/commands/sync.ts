@@ -36,6 +36,14 @@ export const handler = async (_argv: Arguments): Promise<void> => {
     loadPackageJSON(),
   ]);
 
+  const verifyBuildCommand = () => {
+    if (!(buildCommand in (pkg?.scripts ?? {}))) {
+      throw new Error(
+        `The build command "${buildCommand}" was not found in package.json. Example: "build-storybook": "build-storybook"`,
+      );
+    }
+  }
+
   const token = (_argv.token ??
     animaConfig?.access_token ??
     process.env.STORYBOOK_ANIMA_TOKEN ??
@@ -57,11 +65,12 @@ export const handler = async (_argv: Arguments): Promise<void> => {
     throw new Error('No Storybook token provided');
   }
 
-  if (!(buildCommand in (pkg?.scripts ?? {}))) {
-    throw new Error(
-      `The build command "${buildCommand}" was not found in package.json. Example: "build-storybook": "build-storybook"`,
-    );
+
+  // check if build command exists only if we --skip-build is not set 
+  if (!_argv.skipBuild) {
+    verifyBuildCommand();
   }
+
 
   const response = await authenticate(token);
   loader.stop();
@@ -92,6 +101,7 @@ export const handler = async (_argv: Arguments): Promise<void> => {
 
   if (!skipBuild) {
     try {
+      verifyBuildCommand()
       await buildStorybook(buildCommand, !!_argv.silent);
     } catch (error) {
       throw new Error(`Failed to build Storybook`);
@@ -124,7 +134,7 @@ export const handler = async (_argv: Arguments): Promise<void> => {
       designTokens = await fs.readJSON(designTokenFilePath);
     }
     // eslint-disable-next-line no-empty
-  } catch (error) {}
+  } catch (error) { }
 
   const data = await getOrCreateStorybook(token, zipHash, designTokens);
 
