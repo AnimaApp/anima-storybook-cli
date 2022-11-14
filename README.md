@@ -28,7 +28,6 @@ create an `anima.config.js` file in your root directory
 ```js
 // anima.config.js
 module.exports = {
-  access_token: '<paste your access token here>',
   build_command: '<storybook build command>', // build-storybook by default
 };
 ```
@@ -46,5 +45,5 @@ anima-storybook sync [options]
 
 | Options                          | Description                                                              |
 | -------------------------------- | ------------------------------------------------------------------------ |
-| `-t`, `--token [string]`         | Provide anima's access token <br/>`anima-storybook -t 1234`              |
+| `-t`, `--token [string]`         | Provide anima's storybook token <br/>`anima-storybook -t 1234`           |
 | `-b`, `--build-command [number]` | Storybook build command to run <br/>`anima-storybook -b build-storybook` |

@@ -45,7 +45,6 @@ export const handler = async (_argv: Arguments): Promise<void> => {
   }
 
   const token = (_argv.token ??
-    animaConfig?.access_token ??
     process.env.STORYBOOK_ANIMA_TOKEN ??
     '') as string;
 
