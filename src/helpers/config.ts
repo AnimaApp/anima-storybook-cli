@@ -4,7 +4,6 @@ import { loadConfig, LoadConfigOptions } from 'c12';
 import { readPackageJSON, resolvePackageJSON, PackageJson } from 'pkg-types';
 
 interface AnimaConfig {
-  access_token?: string;
   design_tokens?: Record<string, unknown>;
   build_command?: string;
 }
@@ -31,7 +30,7 @@ export const loadAnimaConfig = async (): Promise<AnimaConfig> => {
     try {
       rcConfig = JSON.parse(readFileSync(rcFile, 'utf-8'));
       // eslint-disable-next-line no-empty
-    } catch (e) {}
+    } catch (e) { }
   }
 
   // load anima.config.json file
@@ -42,7 +41,7 @@ export const loadAnimaConfig = async (): Promise<AnimaConfig> => {
     try {
       jsonConfig = JSON.parse(readFileSync(jsonFile, 'utf-8'));
       // eslint-disable-next-line no-empty
-    } catch (e) {}
+    } catch (e) { }
   }
 
   return {

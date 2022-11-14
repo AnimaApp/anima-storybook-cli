@@ -22,6 +22,8 @@ yargs(hideBin(process.argv))
   // Useful aliases.
   .alias({ h: 'help' })
   // Be nice.
-  .epilogue('For more information, check https://github.com/AnimaApp/cli')
+  .epilogue(
+    'For more information, check https://github.com/AnimaApp/anima-storybook-cli',
+  )
   // Handle failures.
   .fail(handleError).argv;

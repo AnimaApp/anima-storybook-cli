@@ -10,6 +10,7 @@ import {
 } from '../helpers/build';
 import { authenticate, getOrCreateStorybook, updateStorybook } from '../api';
 import { zipDir, hashBuffer, uploadBuffer } from '../helpers';
+import chalk from 'chalk';
 
 export const command = 'sync';
 export const desc = 'Sync Storybook to Figma using Anima';
@@ -20,24 +21,35 @@ export const builder: CommandBuilder = (yargs) =>
       token: { type: 'string', alias: 't' },
       debug: { type: 'boolean', alias: 'd' },
       buildCommand: { type: 'string', alias: 'b' },
+      skipBuild: { type: 'boolean', alias: 'sb' },
+      silent: { type: 'boolean', alias: 's' },
+      buildDir: { type: 'string', alias: 'bd' },
+      designTokens: { type: 'string', alias: 'dt' },
     })
     .example([['$0 sync -f <filepath>']]);
 
 export const handler = async (_argv: Arguments): Promise<void> => {
   const __DEBUG__ = !!_argv.debug;
 
-  const [config, pkg] = await Promise.all([
+  const [animaConfig, pkg] = await Promise.all([
     loadAnimaConfig(),
     loadPackageJSON(),
   ]);
 
+  const verifyBuildCommand = () => {
+    if (!(buildCommand in (pkg?.scripts ?? {}))) {
+      throw new Error(
+        `The build command "${buildCommand}" was not found in package.json. Example: "build-storybook": "build-storybook"`,
+      );
+    }
+  }
+
   const token = (_argv.token ??
-    config?.access_token ??
     process.env.STORYBOOK_ANIMA_TOKEN ??
     '') as string;
 
   const buildCommand = (_argv.buildCommand ??
-    config?.build_command ??
+    animaConfig?.build_command ??
     DEFAULT_BUILD_COMMAND) as string;
 
   if (__DEBUG__) {
@@ -45,12 +57,19 @@ export const handler = async (_argv: Arguments): Promise<void> => {
     console.log('token =>', token);
   }
 
-  let stage = 'Validating token';
+  let stage = 'Checking local environment';
   let loader = ora(`${stage}...`).start();
 
   if (!token) {
     throw new Error('No Storybook token provided');
   }
+
+
+  // check if build command exists only if we --skip-build is not set 
+  if (!_argv.skipBuild) {
+    verifyBuildCommand();
+  }
+
 
   const response = await authenticate(token);
   loader.stop();
@@ -59,32 +78,36 @@ export const handler = async (_argv: Arguments): Promise<void> => {
     throw new Error('Storybook token is invalid');
   }
 
-  console.log('\x1b[32m%s\x1b[0m', `  - ${stage} ... OK`);
+  chalk.green(console.log(`  - ${stage} ... OK`));
 
   stage = 'Building Storybook';
 
-  if (!(buildCommand in (pkg?.scripts ?? {}))) {
-    throw new Error(
-      `The build command "${buildCommand}" was not found in package.json. Example: "build-storybook": "build-storybook"`,
-    );
-  }
-
   setupTempDirectory('.anima', { __DEV__: __DEBUG__ });
-  const BUILD_DIR = getBuildDir();
+  const BUILD_DIR = getBuildDir(_argv.buildDir as string | undefined);
   let skipBuild = false;
 
-  if (__DEBUG__ && fs.existsSync(BUILD_DIR)) {
-    skipBuild = true;
+  if (__DEBUG__ || !!_argv.skipBuild) {
+    if (fs.existsSync(BUILD_DIR)) {
+      skipBuild = true;
+    } else {
+      chalk.yellow(
+        console.log(
+          `Cannot skip build, cannot find build directory: ${BUILD_DIR}}`,
+        ),
+      );
+    }
   }
 
   if (!skipBuild) {
-    await buildStorybook(buildCommand);
+    try {
+      verifyBuildCommand()
+      await buildStorybook(buildCommand, !!_argv.silent);
+    } catch (error) {
+      throw new Error(`Failed to build Storybook`);
+    }
   }
 
-  console.log(
-    '\x1b[32m%s\x1b[0m',
-    `  - ${stage} ... ${skipBuild ? 'SKIP' : 'OK'} `,
-  );
+  chalk.green(console.log(`  - ${stage} ... ${skipBuild ? 'SKIP' : 'OK'} `));
 
   stage = 'Preparing files';
   loader = ora(`${stage}...`).start();
@@ -95,14 +118,24 @@ export const handler = async (_argv: Arguments): Promise<void> => {
   __DEBUG__ && console.log('generated hash =>', zipHash);
 
   loader.stop();
-  console.log('\x1b[32m%s\x1b[0m', `  - ${stage} ... OK`);
+  chalk.green(console.log(`  - ${stage} ... OK`));
 
   stage = 'Syncing files';
   loader = ora(`${stage}...`).start();
 
   let skipUpload = true;
 
-  const data = await getOrCreateStorybook(token, zipHash);
+  let designTokens: Record<string, any> = animaConfig.design_tokens ?? {};
+
+  try {
+    const designTokenFilePath = _argv.designTokens as string | undefined;
+    if (designTokenFilePath && fs.existsSync(designTokenFilePath)) {
+      designTokens = await fs.readJSON(designTokenFilePath);
+    }
+    // eslint-disable-next-line no-empty
+  } catch (error) { }
+
+  const data = await getOrCreateStorybook(token, zipHash, designTokens);
 
   const { storybookId, uploadUrl, uploadStatus } = data;
 
@@ -112,16 +145,16 @@ export const handler = async (_argv: Arguments): Promise<void> => {
     skipUpload = false;
     const uploadResponse = await uploadBuffer(uploadUrl, zipBuffer);
     const upload_status = uploadResponse.status === 200 ? 'complete' : 'failed';
-    await updateStorybook(token, storybookId, { upload_status });
+    await updateStorybook(token, storybookId, {
+      upload_status,
+      preload_stories: true,
+    });
   }
 
   loader.stop();
-  console.log(
-    '\x1b[32m%s\x1b[0m',
-    `  - ${stage} ...  ${skipUpload ? 'SKIP' : 'OK'}`,
-  );
+  chalk.green(console.log(`  - ${stage} ...  ${skipUpload ? 'SKIP' : 'OK'}`));
 
-  console.log('\x1b[32m%s\x1b[0m', '  - Done');
+  chalk.green(console.log('  - Done'));
 
   if (__DEBUG__) {
     console.log('_id =>', storybookId);
