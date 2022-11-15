@@ -82,7 +82,7 @@ anima-storybook sync [option]
 | `--token`                                | `-t`  | Provide Anima's access token if it is not set as Environment variable                                            |   `string`   |
 | `--build-command`                        | `-b`  | To specify a custom build command, otherwise it uses Storybook's default `build-storybook`                       |   `string`   |
 | `--design-tokens`                        | `-dt` | Provide a the JSON file of your Design Tokens, i.e. `./design-tokens.json`                                        | `<filePath>`  |
-| `--skip-build` &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | `-sb` | If the CI process already builds the storybook, anima-storybook-cli can skip the build and use existing instead. |   `boolean`  |
+| `--skip-build` &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | `-sb` | If the CI process already builds the storybook, anima-storybook-cli can skip the build and use existing instead. |   `boolean`  |
 | `--build-dir`                            | `-bd` | To specify a custom build folder, otherwise it uses Storybook's default `storybook-static`                       |   `string`   |
 | `--silent`                               | `-s`  |  shh 👀                                                                                                          |   `boolean`  |
 | `--debug`                                | `-d`  | Print everything into the console                                                                                |   `boolean`  |
