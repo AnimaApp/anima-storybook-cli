@@ -6,7 +6,7 @@
 </h1>
 </div>
 
-Anima Storybook CLI is a command line interface that enables to transform [Storybook](https://storybook.js.org) stories into Figma components for a better design-development workflow.
+**Anima Storybook CLI** is a command line interface that transforms [Storybook](https://storybook.js.org) stories into Figma components for a better design-development workflow.
 
 Learn more about the motivations and benefits in our [our blog post](https://blog.animaapp.com/design-with-your-live-code-components-7f61e99b9bf0).
 
@@ -54,8 +54,14 @@ We recommend adding the following script to your `package.json`:
 ```json
 "scripts": {
   //...
-  "anima-sync": "anima-storybook sync"
+  "sync": "anima-storybook sync"
 }
+```
+
+then run it with:
+
+```sh
+npm run sync
 ```
 
 ## Commands and Options
@@ -83,12 +89,12 @@ anima-storybook sync [option]
 
 ## Alternative configuration
 
-You can also create an `anima.config.js` file in your root directory, to save 
+You can also create an `anima.config.js` file in your root directory, and save the configuration values like design tokens and build command.
 
 ```js
 // anima.config.js
 module.exports = {
-  design_tokens: '<path to design tokens JSON file>',
-  build_command: '<custom storybook build command>', 
+  design_tokens: '<path to design tokens JSON file>', // "./design-tokens.json"
+  build_command: '<custom storybook build command>', // "storybook:build"
 };
 ```
