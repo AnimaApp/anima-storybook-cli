@@ -51,7 +51,7 @@ env:
 We recommend adding the following script to your `package.json`:
 > So it can be easily integrated with your Continuous Integration solution.
 
-```json
+```js
 "scripts": {
   //...
   "sync": "anima-storybook sync"
