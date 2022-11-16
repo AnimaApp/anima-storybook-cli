@@ -1,5 +1,6 @@
 import nf, { Response } from 'node-fetch';
 import { STORYBOOK_SERVICE_BASE_URL } from '../constants';
+import { convertDSToJSON } from './../helpers/';
 
 export const getStorybookByHash = async (
   token: string,
@@ -49,10 +50,19 @@ interface getOrCreateStorybookResponse {
 export const getOrCreateStorybook = async (
   token: string,
   hash: string,
-  ds_tokens: Record<string, unknown> = {},
+  raw_ds_tokens: Record<string, unknown> = {},
 ): Promise<getOrCreateStorybookResponse> => {
   const res = await getStorybookByHash(token, hash);
   let data: Record<string, any> | null = {};
+
+  let ds_tokens = {}
+
+  try {
+    ds_tokens = convertDSToJSON(raw_ds_tokens)
+    // eslint-disable-next-line no-empty
+  } catch (e) {
+
+  }
 
   if (res.status === 200) {
     data = await res.json();
