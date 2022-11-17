@@ -4,3 +4,4 @@ export * from './upload';
 export * from './zip';
 export * from './hash';
 export * from './parse';
+export * from './log';
