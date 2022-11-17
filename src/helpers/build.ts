@@ -3,7 +3,7 @@ import path from 'path';
 import fs from 'fs-extra';
 
 export const DEFAULT_BUILD_COMMAND = 'build-storybook';
-const DEFAULT_BUILD_DIR = 'storybook-static';
+export const DEFAULT_BUILD_DIR = 'storybook-static';
 
 export const buildStorybook = (
   command?: string,
