@@ -79,11 +79,11 @@ anima-storybook sync [option]
 
 ### Options
 
-| Options           | Short | Description                                                                                     |    Type    |
-| :---------------- | :---: | :---------------------------------------------------------------------------------------------- | :--------: |
-| `--token`         | `-t`  | Provide Anima's token if it was not set as Environment variable                                 |  `string`  |
-| `--directory`     | `-d`  | To specify the storybook build folder, otherwise it uses Storybook's default `storybook-static` |  `string`  |
-| `--design-tokens` |       | Provide a the JSON file of your Design Tokens, i.e. `./design-tokens.json`                      | `filePath` |
+| Options           | Short | Description                                                                                     |   Type   |
+| :---------------- | :---: | :---------------------------------------------------------------------------------------------- | :------: |
+| `--token`         | `-t`  | Provide Anima's token if it was not set as Environment variable                                 | `string` |
+| `--directory`     | `-d`  | To specify the storybook build folder, otherwise it uses Storybook's default `storybook-static` | `string` |
+| `--design-tokens` |       | Provide a path of your Design Tokens file, i.e. `./design-tokens.json`                          | `string` |
 
 ## Alternative configuration
 
