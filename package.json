@@ -29,7 +29,6 @@
     "@types/node-fetch": "^2.6.2",
     "archiver": "^5.3.1",
     "c12": "^0.2.13",
-    "chalk": "4.1.2",
     "expr-eval": "^2.0.2",
     "form-data": "^4.0.0",
     "fs-extra": "10.0.0",
