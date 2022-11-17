@@ -47,7 +47,7 @@ export const handler = async (_argv: Arguments): Promise<void> => {
   // check if build directory exists
   const BUILD_DIR = getBuildDir(_argv.directory as string | undefined);
   if (!fs.existsSync(BUILD_DIR)) {
-    loader.stop().clear();
+    loader.stop();
     log.yellow(
       `Cannot find build directory: "${
         _argv.directory ?? DEFAULT_BUILD_DIR
