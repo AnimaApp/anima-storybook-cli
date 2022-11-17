@@ -13,6 +13,7 @@ Learn more about the motivations and benefits in our [our blog post](https://blo
 ## Setup
 
 ### 1. Install the CLI
+
 Run the following command in the project that has Storybook installed:
 
 ```sh
@@ -20,11 +21,12 @@ npm install --save-dev anima-storybook-cli
 ```
 
 ### 2. Add Anima Token
+
 Your team's Anima Token can be retrieved from the [Anima Plugin](https://www.figma.com/community/plugin/857346721138427857) under the "Storybook" section.
 
 Then, add it as an Environment Variable:
 
->If you're running locally, add it to `.env` file in the root of your project
+> If you're running locally, add it to `.env` file in the root of your project
 
 ```sh
 STORYBOOK_ANIMA_TOKEN="PASTE_YOUR_TOKEN_HERE"
@@ -46,9 +48,8 @@ env:
 
 ## Usage
 
-
-
 We recommend adding the following script to your `package.json`:
+
 > So it can be easily integrated with your Continuous Integration solution.
 
 ```js
@@ -72,28 +73,25 @@ Command to sync the storybook project to Anima team so that it can be then gener
 
 ```sh
 anima-storybook sync [option]
-# example: 
+# example:
 # anima-storybook sync --token <anima_token>
 ```
 
 ### Options
-| Options           | Short | Description                                                                                         | Type      |
-|:------------------|:-----:|:----------------------------------------------------------------------------------------------------|:---------:|
-| `--token`         | `-t`  | Provide Anima's token if it was not set as Environment variable                                     | `string`  |
-| `--build-command` | `-b`  | To specify a custom build command, otherwise it uses Storybook's default <br> `build-storybook`     | `string`  |
-| `--design-tokens` | `-dt` | Provide a the JSON file of your Design Tokens, i.e. `./design-tokens.json`                           | `filePath` |
-| `--skip-build`    | `-sb` | If the CI process already builds Storybook, the CLI can skip the build and use existing one instead | `boolean` |
-| `--build-dir`     | `-bd` | To specify a custom build folder, otherwise it uses Storybook's default <br> `storybook-static`     | `string`  |
-| `--silent`&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; | `-s` | shh  | `boolean` |
+
+| Options           | Short | Description                                                                                          |    Type    |
+| :---------------- | :---: | :--------------------------------------------------------------------------------------------------- | :--------: |
+| `--token`         | `-t`  | Provide Anima's token if it was not set as Environment variable                                      |  `string`  |
+| `--design-tokens` |       | Provide a the JSON file of your Design Tokens, i.e. `./design-tokens.json`                           | `filePath` |
+| `--directory`     | `-d`  | To specify the storybook build folder, otherwise it uses Storybook's default <br> `storybook-static` |  `string`  |
 
 ## Alternative configuration
 
-You can also create an `anima.config.js` file in your root directory, and save the configuration values like design tokens and build command.
+You can also create an `anima.config.js` file in your root directory, and save the configuration values like design tokens.
 
 ```js
 // anima.config.js
 module.exports = {
   design_tokens: '<path to design tokens JSON file>', // "./design-tokens.json"
-  build_command: '<custom storybook build command>', // "storybook:build"
 };
 ```
