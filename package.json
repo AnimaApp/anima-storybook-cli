@@ -30,11 +30,14 @@
     "archiver": "^5.3.1",
     "c12": "^0.2.13",
     "chalk": "4.1.2",
+    "expr-eval": "^2.0.2",
     "form-data": "^4.0.0",
     "fs-extra": "10.0.0",
+    "lodash": "^4.17.21",
     "node-fetch": "2",
     "ora": "^5.4.1",
     "pkg-types": "^0.3.5",
+    "short-unique-id": "^4.4.4",
     "yargs": "17.0.1"
   },
   "devDependencies": {
@@ -47,10 +50,7 @@
     "@typescript-eslint/parser": "4.28.2",
     "eslint": "7.30.0",
     "eslint-config-prettier": "8.3.0",
-    "expr-eval": "^2.0.2",
-    "lodash": "^4.17.21",
     "prettier": "2.3.2",
-    "short-unique-id": "^4.4.4",
     "typescript": "4.3.5"
   }
 }
