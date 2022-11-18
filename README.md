@@ -10,53 +10,74 @@
 
 Learn more about the motivations and benefits in our [our blog post](https://blog.animaapp.com/design-with-your-live-code-components-7f61e99b9bf0).
 
+## Quick start
+1. Get your team's Anima Token in the [Anima Plugin](https://www.figma.com/community/plugin/857346721138427857) under the "Storybook" section.
+2. Then run `npx anima-storybook-cli sync -t <ANIMA_TOKEN_HERE>` in your Storybook project.
+3. On a Figma file, open the Anima plugin in the Storybook section and select the components you want to sync.
+4. That's it! You can now use your Storybook components in Figma.
+
+
 ## Setup
 
 ### 1. Install the CLI
 
-Run one of the following command in the project that has Storybook installed:
+Run the following command (of your preferred package manager) in the project that has Storybook installed:
 
 ```sh
 npm install --save-dev anima-storybook-cli
 ```
+
 ```sh
 yarn add -D anima-storybook-cli
 ```
+
 ```sh
-pnpm i -D anima-storybook-cli
+pnpm add -D anima-storybook-cli
 ```
 
 ### 2. Add Anima Token
 
-Your team's Anima Token can be retrieved from the [Anima Plugin](https://www.figma.com/community/plugin/857346721138427857) under the "Storybook" section.
+Get your team's Anima Token that can be retrieved from the [Anima Plugin](https://www.figma.com/community/plugin/857346721138427857) under the "Storybook" section.
 
 Then, add it as an Environment Variable:
 
-> If you're running locally, add it to `.env` file in the root of your project
+#### If you're running locally, add the token to an `.env` file in the root of your project
 
 ```sh
-STORYBOOK_ANIMA_TOKEN="PASTE_YOUR_TOKEN_HERE"
+#.env
+STORYBOOK_ANIMA_TOKEN="PASTE_ANIMA_TOKEN_HERE"
 ```
 
-> in a circleCI step ([how to add Environment Variables in a circleCI](https://circleci.com/docs/set-environment-variable/#set-an-environment-variable-in-a-project))
+>Alternatively you can use the `-t` flag when running the CLI command, i.e.:
+>```sh
+>npm run anima-storybook sync -t <ANIMA_TOKEN_HERE>
+>```
+
+#### in a circleCI step ([how to add Environment Variables in a circleCI](https://circleci.com/docs/set-environment-variable/#set-an-environment-variable-in-a-project))
 
 ```yml
+# .circleci/config.yml
 environment:
   STORYBOOK_ANIMA_TOKEN: $STORYBOOK_ANIMA_TOKEN
 ```
 
-> in a GitHub Action step ([how to add Environment Variables in GitHub Actions](https://docs.github.com/en/actions/reference/encrypted-secrets#creating-encrypted-secrets-for-a-repository))
+#### in a GitHub Action step ([how to add Environment Variables in GitHub Actions](https://docs.github.com/en/actions/reference/encrypted-secrets#creating-encrypted-secrets-for-a-repository))
 
 ```yml
+# .github/workflows/main.yml
 env:
   STORYBOOK_ANIMA_TOKEN: ${{ secrets.STORYBOOK_ANIMA_TOKEN }}
 ```
 
 ## Usage
 
-We recommend adding the following script to your `package.json`:
+```sh
+[pkg manager] anima-storybook sync [option]
+```
 
-> So it can be easily integrated with your Continuous Integration solution.
+### We recommend adding the following script to your `package.json`:
+
+So it can be easily integrated with your Continuous Integration solution.
 
 ```js
 "scripts": {
@@ -65,10 +86,18 @@ We recommend adding the following script to your `package.json`:
 }
 ```
 
-then run it with:
+then run easily it with:
 
 ```sh
 npm run sync
+```
+
+```sh
+yarn sync
+```
+
+```sh
+pnpm sync
 ```
 
 ## Commands and Options
@@ -78,9 +107,23 @@ npm run sync
 Command to sync the storybook project to Anima team so that it can be then generated in Figma.
 
 ```sh
-anima-storybook sync [option]
-# example:
-# anima-storybook sync --token <anima_token>
+npm run anima-storybook sync [option]
+```
+
+```sh
+yarn anima-storybook sync [option]
+```
+
+```sh
+pnpm anima-storybook sync [option]
+```
+
+Example of possible commands
+
+```sh
+yarn anima-storybook sync --token <anima_token> 
+yarn anima-storybook sync --directory <storybook_static_dir> #default is storybok-static
+yarn anima-storybook sync --design-tokens <path_to_design_tokens_file>
 ```
 
 ### Options
@@ -89,7 +132,7 @@ anima-storybook sync [option]
 | :---------------- | :---: | :---------------------------------------------------------------------------------------------- | :------: |
 | `--token`         | `-t`  | Provide Anima's token if it was not set as Environment variable                                 | `string` |
 | `--directory`     | `-d`  | To specify the storybook build folder, otherwise it uses Storybook's default `storybook-static` | `string` |
-| `--design-tokens` |       | Provide a path of your Design Tokens file, i.e. `./design-tokens.json`                          | `string` |
+| `--design-tokens` &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; |       | Provide a path of your Design Tokens file, i.e. `./design-tokens.json`                          | `string` |
 
 ## Alternative configuration
 
