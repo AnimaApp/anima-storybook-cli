@@ -14,10 +14,16 @@ Learn more about the motivations and benefits in our [our blog post](https://blo
 
 ### 1. Install the CLI
 
-Run the following command in the project that has Storybook installed:
+Run one of the following command in the project that has Storybook installed:
 
 ```sh
 npm install --save-dev anima-storybook-cli
+```
+```sh
+yarn add -D anima-storybook-cli
+```
+```sh
+pnpm i -D anima-storybook-cli
 ```
 
 ### 2. Add Anima Token
