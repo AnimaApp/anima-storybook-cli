@@ -79,6 +79,7 @@ env:
 ### We recommend adding the following script to your `package.json`:
 
 So it can be easily integrated with your Continuous Integration solution.
+
 Running the build of your storybook before syncing it with anima ensure that your storybook is always up to date.
 
 ```js
