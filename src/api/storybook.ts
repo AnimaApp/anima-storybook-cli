@@ -2,6 +2,13 @@ import nf, { Response } from 'node-fetch';
 import { STORYBOOK_SERVICE_BASE_URL } from '../constants';
 import { convertDSToJSON } from './../helpers/';
 
+interface StorybookEntity {
+  upload_status: string;
+  upload_signed_url: string;
+  id: string;
+  preload_stories: boolean;
+}
+
 export const getStorybookByHash = async (
   token: string,
   hash: string,
@@ -19,7 +26,7 @@ export const createStorybook = async (
   token: string,
   hash: string,
   ds_tokens: Record<string, unknown>,
-): Promise<Record<string, unknown> | null> => {
+): Promise<StorybookEntity | null> => {
   const res = await nf(`${STORYBOOK_SERVICE_BASE_URL}/storybook`, {
     method: 'POST',
     headers: {
@@ -53,16 +60,14 @@ export const getOrCreateStorybook = async (
   raw_ds_tokens: Record<string, unknown> = {},
 ): Promise<getOrCreateStorybookResponse> => {
   const res = await getStorybookByHash(token, hash);
-  let data: Record<string, any> | null = {};
+  let data: StorybookEntity | null = null;
 
-  let ds_tokens = {}
+  let ds_tokens = {};
 
   try {
-    ds_tokens = convertDSToJSON(raw_ds_tokens)
+    ds_tokens = convertDSToJSON(raw_ds_tokens);
     // eslint-disable-next-line no-empty
-  } catch (e) {
-
-  }
+  } catch (e) {}
 
   if (res.status === 200) {
     data = await res.json();
@@ -83,7 +88,7 @@ export const getOrCreateStorybook = async (
 export const updateStorybook = async (
   token: string,
   id: string,
-  fields: Record<string, unknown>,
+  fields: Partial<StorybookEntity>,
 ): Promise<Response> => {
   return nf(`${STORYBOOK_SERVICE_BASE_URL}/storybook/${id}`, {
     method: 'PUT',
