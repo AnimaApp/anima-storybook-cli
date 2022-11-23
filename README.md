@@ -12,9 +12,10 @@ Learn more about the motivations and benefits in our [our blog post](https://blo
 
 ## Quick start
 1. Get your team's Anima Token in the [Anima Plugin](https://www.figma.com/community/plugin/857346721138427857) under the "Storybook" section.
-2. Then run `npx anima-storybook-cli sync -t <ANIMA_TOKEN_HERE>` in your Storybook project.
-3. On a Figma file, open the Anima plugin in the Storybook section and select the components you want to sync.
-4. That's it! You can now use your Storybook components in Figma.
+2. Build your storybook, usually `npm run build-storybook`
+3. Then run `npx anima-storybook-cli sync -t <ANIMA_TOKEN_HERE>` in your Storybook project.
+4. On a Figma file, open the Anima plugin in the Storybook section and select the components you want to sync.
+5. That's it! You can now use your Storybook components in Figma.
 
 
 ## Setup
@@ -79,10 +80,12 @@ env:
 
 So it can be easily integrated with your Continuous Integration solution.
 
+Running the build of your storybook before syncing it with anima ensure that your storybook is always up to date.
+
 ```js
 "scripts": {
   //...
-  "sync": "anima-storybook sync"
+  "sync": "npm run build-storybook && anima-storybook sync"
 }
 ```
 
@@ -92,14 +95,6 @@ then run easily it with:
 npm run sync
 ```
 
-```sh
-yarn sync
-```
-
-```sh
-pnpm sync
-```
-
 ## Commands and Options
 
 ### `sync`
@@ -107,23 +102,15 @@ pnpm sync
 Command to sync the storybook project to Anima team so that it can be then generated in Figma.
 
 ```sh
-npm run anima-storybook sync [option]
-```
-
-```sh
-yarn anima-storybook sync [option]
-```
-
-```sh
-pnpm anima-storybook sync [option]
+anima-storybook sync [option]
 ```
 
 Example of possible commands
 
 ```sh
-yarn anima-storybook sync --token <anima_token> 
-yarn anima-storybook sync --directory <storybook_static_dir> #default is storybok-static
-yarn anima-storybook sync --design-tokens <path_to_design_tokens_file>
+npx anima-storybook sync --token <anima_token> 
+npx anima-storybook sync --directory <storybook_static_dir> #default is storybok-static
+npx anima-storybook sync --design-tokens <path_to_design_tokens_file>
 ```
 
 ### Options
