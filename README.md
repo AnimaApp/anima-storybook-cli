@@ -54,13 +54,12 @@ STORYBOOK_ANIMA_TOKEN="PASTE_ANIMA_TOKEN_HERE"
 >npm run anima-storybook sync -t <ANIMA_TOKEN_HERE>
 >```
 
-#### in a circleCI step ([how to add Environment Variables in a circleCI](https://circleci.com/docs/set-environment-variable/#set-an-environment-variable-in-a-project))
+<details>
 
-```yml
-# .circleci/config.yml
-environment:
-  STORYBOOK_ANIMA_TOKEN: $STORYBOOK_ANIMA_TOKEN
-```
+<summary>If you're running on a CI, add the token as an Environment Variable … </summary>
+
+
+#### in a circleCI step ([how to add Environment Variables in a circleCI](https://circleci.com/docs/set-environment-variable/#set-an-environment-variable-in-a-project))
 
 #### in a GitHub Action step ([how to add Environment Variables in GitHub Actions](https://docs.github.com/en/actions/reference/encrypted-secrets#creating-encrypted-secrets-for-a-repository))
 
@@ -69,6 +68,7 @@ environment:
 env:
   STORYBOOK_ANIMA_TOKEN: ${{ secrets.STORYBOOK_ANIMA_TOKEN }}
 ```
+</details>
 
 ## Usage
 
