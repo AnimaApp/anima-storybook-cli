@@ -6,6 +6,7 @@ import { DEFAULT_BUILD_DIR, getBuildDir } from '../helpers/build';
 import {
   authenticate,
   getOrCreateStorybook,
+  updateDSTokenIfNeeded,
   updateStorybook,
 } from '../api';
 import { zipDir, hashBuffer, uploadBuffer, log } from '../helpers';
@@ -110,7 +111,7 @@ export const handler = async (_argv: Arguments): Promise<void> => {
 
   const data = await getOrCreateStorybook(token, zipHash, designTokens);
 
-  const { storybookId, uploadUrl, uploadStatus } = data;
+  const { storybookId, uploadUrl, uploadStatus, dsTokens } = data;
 
   __DEBUG__ && console.log('storybookId =>', storybookId);
 
@@ -121,6 +122,13 @@ export const handler = async (_argv: Arguments): Promise<void> => {
     await updateStorybook(token, storybookId, {
       upload_status,
       preload_stories: true,
+    });
+  }
+  if (storybookId) {
+    await updateDSTokenIfNeeded({
+      storybook: { id: storybookId, ds_tokens: dsTokens },
+      token,
+      currentDSToken: designTokens,
     });
   }
 

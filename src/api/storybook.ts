@@ -7,6 +7,7 @@ interface StorybookEntity {
   upload_signed_url: string;
   id: string;
   preload_stories: boolean;
+  ds_tokens: string;
 }
 
 export const getStorybookByHash = async (
@@ -51,8 +52,31 @@ interface getOrCreateStorybookResponse {
   storybookId: string | null | undefined;
   uploadUrl: string | null | undefined;
   uploadStatus: string;
+  dsTokens?: string;
   hash: string;
 }
+
+export const updateDSTokenIfNeeded = async ({
+  currentDSToken,
+  storybook,
+  token,
+}: {
+  currentDSToken: Record<string, unknown>;
+  storybook: { ds_tokens?: string; id: string };
+  token: string;
+}): Promise<void> => {
+  const { ds_tokens, id } = storybook;
+  const ds_tokensAsString = JSON.stringify(currentDSToken);
+
+  if (ds_tokens !== ds_tokensAsString) {
+    const response = await updateStorybook(token, id, {
+      ds_tokens: ds_tokensAsString,
+    });
+    if (response.status !== 200) {
+      throw new Error("Fail to update the storybook's design tokens");
+    }
+  }
+};
 
 export const getOrCreateStorybook = async (
   token: string,
@@ -75,13 +99,19 @@ export const getOrCreateStorybook = async (
     data = await createStorybook(token, hash, ds_tokens);
   }
 
-  const { id, upload_signed_url, upload_status = 'init' } = data ?? {};
+  const {
+    id,
+    upload_signed_url,
+    upload_status = 'init',
+    ds_tokens: dsTokens,
+  } = data ?? {};
 
   return {
     storybookId: id,
     uploadUrl: upload_signed_url,
     uploadStatus: upload_status,
     hash,
+    dsTokens,
   };
 };
 
