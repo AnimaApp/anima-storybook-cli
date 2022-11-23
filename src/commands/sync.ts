@@ -3,7 +3,11 @@ import { Arguments, CommandBuilder } from 'yargs';
 import ora from 'ora';
 import fs from 'fs-extra';
 import { DEFAULT_BUILD_DIR, getBuildDir } from '../helpers/build';
-import { authenticate, getOrCreateStorybook, updateStorybook } from '../api';
+import {
+  authenticate,
+  getOrCreateStorybook,
+  updateStorybook,
+} from '../api';
 import { zipDir, hashBuffer, uploadBuffer, log } from '../helpers';
 
 export const command = 'sync';
@@ -88,13 +92,21 @@ export const handler = async (_argv: Arguments): Promise<void> => {
   let designTokens: Record<string, unknown> = animaConfig.design_tokens ?? {};
 
   // check if design tokens json is provided and add it to the payload
+  const designTokenFilePath = _argv.designTokens as string | undefined;
   try {
-    const designTokenFilePath = _argv.designTokens as string | undefined;
-    if (designTokenFilePath && fs.existsSync(designTokenFilePath)) {
-      designTokens = await fs.readJSON(designTokenFilePath);
+    if (designTokenFilePath) {
+      if (fs.existsSync(designTokenFilePath)) {
+        designTokens = await fs.readJSON(designTokenFilePath);
+      } else {
+        throw new Error('Path not found');
+      }
     }
-    // eslint-disable-next-line no-empty
-  } catch (error) {}
+  } catch (error) {
+    const errorMessage = `Fail to read design tokens at path "${designTokenFilePath}"`;
+    loader.stop();
+    log.yellow(errorMessage);
+    process.exit(1);
+  }
 
   const data = await getOrCreateStorybook(token, zipHash, designTokens);
 
