@@ -111,7 +111,8 @@ export const handler = async (_argv: Arguments): Promise<void> => {
 
   const data = await getOrCreateStorybook(token, zipHash, designTokens);
 
-  const { storybookId, uploadUrl, uploadStatus, dsTokens } = data;
+  const { storybookId, uploadUrl, dsTokens } = data;
+  let { uploadStatus } = data;
 
   __DEBUG__ && console.log('storybookId =>', storybookId);
 
@@ -123,10 +124,11 @@ export const handler = async (_argv: Arguments): Promise<void> => {
       upload_status,
       preload_stories: true,
     });
+    uploadStatus = upload_status;
   }
-  if (storybookId) {
+  if (storybookId && uploadStatus === 'complete') {
     await updateDSTokenIfNeeded({
-      storybook: { id: storybookId, ds_tokens: dsTokens },
+      storybook: { id: storybookId, ds_tokens: dsTokens, upload_status: uploadStatus },
       token,
       currentDSToken: designTokens,
     });

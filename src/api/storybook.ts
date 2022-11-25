@@ -62,15 +62,16 @@ export const updateDSTokenIfNeeded = async ({
   token,
 }: {
   currentDSToken: Record<string, unknown>;
-  storybook: { ds_tokens?: string; id: string };
+  storybook: { ds_tokens?: string; id: string, upload_status: string };
   token: string;
 }): Promise<void> => {
-  const { ds_tokens, id } = storybook;
+  const { ds_tokens, id, upload_status } = storybook;
   const ds_tokensAsString = JSON.stringify(currentDSToken);
 
   if (ds_tokens !== ds_tokensAsString) {
     const response = await updateStorybook(token, id, {
       ds_tokens: ds_tokensAsString,
+      upload_status: upload_status,
     });
     if (response.status !== 200) {
       throw new Error("Fail to update the storybook's design tokens");
