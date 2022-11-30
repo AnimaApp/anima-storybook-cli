@@ -109,7 +109,7 @@ Example of possible commands
 
 ```sh
 npx anima-storybook sync --token <anima_token> 
-npx anima-storybook sync --directory <storybook_static_dir> #default is storybok-static
+npx anima-storybook sync --directory <storybook_static_dir> #default is storybook-static
 npx anima-storybook sync --design-tokens <path_to_design_tokens_file>
 ```
 
