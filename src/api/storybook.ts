@@ -1,6 +1,6 @@
 import nf, { Response } from 'node-fetch';
 import { STORYBOOK_SERVICE_BASE_URL } from '../constants';
-import { convertDSToJSON } from './../helpers/';
+import { transformDStoJSON, log } from './../helpers/';
 
 interface StorybookEntity {
   upload_status: string;
@@ -62,11 +62,18 @@ export const updateDSTokenIfNeeded = async ({
   token,
 }: {
   currentDSToken: Record<string, unknown>;
-  storybook: { ds_tokens?: string; id: string, upload_status: string };
+  storybook: { ds_tokens?: string; id: string; upload_status: string };
   token: string;
 }): Promise<void> => {
   const { ds_tokens, id, upload_status } = storybook;
-  const ds_tokensAsString = JSON.stringify(currentDSToken);
+  let transformedToken = {};
+  try {
+    transformedToken = transformDStoJSON(currentDSToken);
+  } catch (e) {
+    log.red('[Update design tokens] Invalid tokens file');
+  }
+
+  const ds_tokensAsString = JSON.stringify(transformedToken);
 
   if (ds_tokens !== ds_tokensAsString) {
     const response = await updateStorybook(token, id, {
@@ -74,7 +81,7 @@ export const updateDSTokenIfNeeded = async ({
       upload_status: upload_status,
     });
     if (response.status !== 200) {
-      throw new Error("Network request failed, response status !== 200");
+      throw new Error('Network request failed, response status !== 200');
     }
   }
 };
@@ -90,9 +97,10 @@ export const getOrCreateStorybook = async (
   let ds_tokens = {};
 
   try {
-    ds_tokens = convertDSToJSON(raw_ds_tokens);
-    // eslint-disable-next-line no-empty
-  } catch (e) {}
+    ds_tokens = transformDStoJSON(raw_ds_tokens);
+  } catch (e) {
+    log.red('[Create design tokens] Invalid tokens file');
+  }
 
   if (res.status === 200) {
     data = await res.json();
