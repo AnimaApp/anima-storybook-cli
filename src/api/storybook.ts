@@ -74,7 +74,7 @@ export const updateDSTokenIfNeeded = async ({
       upload_status: upload_status,
     });
     if (response.status !== 200) {
-      throw new Error("Fail to update the storybook's design tokens");
+      throw new Error("Network request failed, response status !== 200");
     }
   }
 };

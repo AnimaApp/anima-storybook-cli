@@ -128,9 +128,15 @@ export const handler = async (_argv: Arguments): Promise<void> => {
   }
   if (storybookId && uploadStatus === 'complete') {
     await updateDSTokenIfNeeded({
-      storybook: { id: storybookId, ds_tokens: dsTokens, upload_status: uploadStatus },
+      storybook: {
+        id: storybookId,
+        ds_tokens: dsTokens,
+        upload_status: uploadStatus,
+      },
       token,
       currentDSToken: designTokens,
+    }).catch((e) => {
+      log.yellow(`Fail to update designTokens, ${e.message}`);
     });
   }
 
