@@ -6,6 +6,7 @@ import { DEFAULT_BUILD_DIR, getBuildDir } from '../helpers/build';
 import {
   authenticate,
   getOrCreateStorybook,
+  updateDSTokenIfNeeded,
   updateStorybook,
 } from '../api';
 import { zipDir, hashBuffer, uploadBuffer, log } from '../helpers';
@@ -110,7 +111,8 @@ export const handler = async (_argv: Arguments): Promise<void> => {
 
   const data = await getOrCreateStorybook(token, zipHash, designTokens);
 
-  const { storybookId, uploadUrl, uploadStatus } = data;
+  const { storybookId, uploadUrl, dsTokens } = data;
+  let { uploadStatus } = data;
 
   __DEBUG__ && console.log('storybookId =>', storybookId);
 
@@ -121,6 +123,20 @@ export const handler = async (_argv: Arguments): Promise<void> => {
     await updateStorybook(token, storybookId, {
       upload_status,
       preload_stories: true,
+    });
+    uploadStatus = upload_status;
+  }
+  if (storybookId && uploadStatus === 'complete') {
+    await updateDSTokenIfNeeded({
+      storybook: {
+        id: storybookId,
+        ds_tokens: dsTokens,
+        upload_status: uploadStatus,
+      },
+      token,
+      currentDSToken: designTokens,
+    }).catch((e) => {
+      log.yellow(`Fail to update designTokens, ${e.message}`);
     });
   }
 

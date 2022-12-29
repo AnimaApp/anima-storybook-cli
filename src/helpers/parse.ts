@@ -1,29 +1,36 @@
-import { camelCase, get, isArray, isObject, isString, isNumber, isEmpty } from "lodash";
-import ShortUniqueId from "short-unique-id";
-import { Parser } from "expr-eval";
+import {
+  camelCase,
+  get,
+  isArray,
+  isObject,
+  isString,
+  isNumber,
+  isEmpty,
+} from 'lodash';
+import ShortUniqueId from 'short-unique-id';
+import { Parser } from 'expr-eval';
 
-const SPEC_STRING_UNIT_TYPES = ["dimension"];
+const SPEC_STRING_UNIT_TYPES = ['dimension'];
 
 const CUSTOM_STRING_UNIT_TYPES = [
-  "spacing",
-  "lineHeights",
-  "borderRadius",
-  "fontSizes",
+  'spacing',
+  'lineHeights',
+  'borderRadius',
+  'fontSizes',
 ];
 const STRING_UNIT_TYPES = [
   ...SPEC_STRING_UNIT_TYPES,
   ...CUSTOM_STRING_UNIT_TYPES,
 ];
 
-
-type DSTokenType = "PAINT" | "TEXT" | "EFFECT" | "unknown";
+type DSTokenType = 'PAINT' | 'TEXT' | 'EFFECT' | 'unknown';
 
 type DSToken = {
   name: string;
   value: string;
   id: string;
   type: DSTokenType;
-}
+};
 
 type ShadowToken = {
   color: string;
@@ -33,17 +40,14 @@ type ShadowToken = {
   y?: string | number;
   blur: string | number;
   spread: string | number;
-}
-
+};
 
 type DSTokenMap = Record<string, DSToken>;
-
-
 
 const uid = new ShortUniqueId({ length: 6 });
 
 const getStringWithUnit = (inp: string | number | undefined) => {
-  if (!isString(inp) && !isNumber(inp)) return "";
+  if (!isString(inp) && !isNumber(inp)) return '';
   if (isNumber(inp)) {
     inp = String(inp);
   }
@@ -56,16 +60,18 @@ const getStringWithUnit = (inp: string | number | undefined) => {
 
   const n = parseFloat(inp),
     p = inp.match(/%|em/),
-    output = isNaN(n) ? "" : p ? n + p[0] : Math.round(n) + "px";
+    output = isNaN(n) ? '' : p ? n + p[0] : Math.round(n) + 'px';
   return output;
 };
 
-const getStringsWithUnit = (values: (string | number | undefined)[]): string[] => {
+const getStringsWithUnit = (
+  values: (string | number | undefined)[],
+): string[] => {
   return values.map(getStringWithUnit);
 };
 
 export const parseShadowObjectToString = (
-  input: ShadowToken | ShadowToken[]
+  input: ShadowToken | ShadowToken[],
 ): string => {
   const toString = (shadow: ShadowToken) => {
     const [offsetX, offsetY, blur, spread, x, y] = getStringsWithUnit([
@@ -77,12 +83,13 @@ export const parseShadowObjectToString = (
       shadow.y,
     ]);
 
-    return `${shadow.color} ${offsetX ? offsetX : x} ${offsetY ? offsetY : y
-      } ${blur} ${spread}`;
+    return `${shadow.color} ${offsetX ? offsetX : x} ${
+      offsetY ? offsetY : y
+    } ${blur} ${spread}`;
   };
 
   if (isArray(input)) {
-    return input.map(toString).join(", ");
+    return input.map(toString).join(', ');
   }
   return toString(input);
 };
@@ -100,15 +107,15 @@ const flattenJSON = (tokens: Record<string, any>) => {
 
   (function find(_tokens) {
     for (const key of Object.keys(_tokens)) {
-      if (key === "$value" || key === "value") {
+      if (key === '$value' || key === 'value') {
         const value = _tokens[key];
-        const parent = get(tokens, `${path.join(".")}`);
+        const parent = get(tokens, `${path.join('.')}`);
         const type = parent?.$type || parent?.type;
 
         if (isString(value)) {
           addEntry({ value, type });
         } else if (isObject(value)) {
-          if (type === "shadow" || type === "boxShadow") {
+          if (type === 'shadow' || type === 'boxShadow') {
             const shadowToken = _tokens[key];
             const shadow = parseShadowObjectToString(shadowToken);
             addEntry({ value: shadow, type });
@@ -129,9 +136,9 @@ const flattenJSON = (tokens: Record<string, any>) => {
   const newObject: Record<string, any> = {};
   tokensArrays.forEach((arr) => {
     const keys = arr.slice(0, -1).map((k) => {
-      return k.split(" ").join("-");
+      return k.split(' ').join('-');
     });
-    const key = keys.join("-");
+    const key = keys.join('-');
     const value = arr.at(-1);
 
     newObject[key] = value;
@@ -150,18 +157,20 @@ const sortKeys = (object: Record<string, any>): Record<string, any> => {
         ...acc,
         [key]: objectCopy[key],
       }),
-      {}
+      {},
     );
 };
 
 const refToName = (refString: string) => {
   const cropped = refString.slice(1, -1).trim();
-  return cropped.split(".").join("-").split(" ").join("-");
+  return cropped.split('.').join('-').split(' ').join('-');
 };
 
 export { refToName };
 
-export const findTrueValues = (groups: Record<string, any>): Record<string, any> => {
+export const findTrueValues = (
+  groups: Record<string, any>,
+): Record<string, any> => {
   const newGroups = JSON.parse(JSON.stringify(groups));
   const justPairs: Record<string, any> = {};
   Object.keys(newGroups).forEach((group) => {
@@ -170,7 +179,7 @@ export const findTrueValues = (groups: Record<string, any>): Record<string, any>
 
   for (const pair in justPairs) {
     // eslint-disable-next-line prefer-const
-    let { value, type } = justPairs[pair]
+    let { value, type } = justPairs[pair];
     if (!isString(value)) continue;
     // eslint-disable-next-line no-useless-escape
     const re = /[^{\}]+(?=})/g;
@@ -191,7 +200,7 @@ export const findTrueValues = (groups: Record<string, any>): Record<string, any>
       try {
         value = Parser.evaluate(expression, map)?.toString();
       } catch (error) {
-        value = "";
+        value = '';
       }
     }
     if (STRING_UNIT_TYPES.includes(type)) {
@@ -207,53 +216,53 @@ export const findTrueValues = (groups: Record<string, any>): Record<string, any>
 };
 
 const isCSSColor = (value: string) => {
-  if (!value) return false
+  if (!value) return false;
   const r = (str: string, amount: number) =>
     Array.from(Array(amount))
       .map(() => str)
       .join('');
-  const reducedHexRegex = new RegExp(`^#${r('([a-f0-9])', 3)}([a-f0-9])?$`, 'i');
+  const reducedHexRegex = new RegExp(
+    `^#${r('([a-f0-9])', 3)}([a-f0-9])?$`,
+    'i',
+  );
   const hexRegex = new RegExp(`^#${r('([a-f0-9]{2})', 3)}([a-f0-9]{2})?$`, 'i');
   const rgbaRegex = new RegExp(
     `^rgba?\\(\\s*(\\d+)\\s*${r(
       ',\\s*(\\d+)\\s*',
-      2
+      2,
     )}(?:,\\s*([\\d.]+))?\\s*\\)$`,
-    'i'
+    'i',
   );
-  const hslaRegex = /^hsla?\(\s*([\d.]+)\s*,\s*([\d.]+)%\s*,\s*([\d.]+)%(?:\s*,\s*([\d.]+))?\s*\)$/i;
+  const hslaRegex =
+    /^hsla?\(\s*([\d.]+)\s*,\s*([\d.]+)%\s*,\s*([\d.]+)%(?:\s*,\s*([\d.]+))?\s*\)$/i;
 
-  return hexRegex.exec(value) || reducedHexRegex.exec(value) || rgbaRegex.exec(value) || hslaRegex.exec(value)
-}
+  return (
+    hexRegex.exec(value) ||
+    reducedHexRegex.exec(value) ||
+    rgbaRegex.exec(value) ||
+    hslaRegex.exec(value)
+  );
+};
 
 const getDSTokenType = (obj: { value: string; type: string }): DSTokenType => {
   const { type, value } = obj;
-  const isColor =
-    type === "color" ||
-    isCSSColor(value)
-  const isBoxShadow =
-    type === "shadow" ||
-    type === "boxShadow"
-  const isFontSize = type === "fontSizes"
-  const isFontFamily =
-    type === "fontFamily" ||
-    type === "fontFamilies"
+  const isColor = type === 'color' || isCSSColor(value);
+  const isBoxShadow = type === 'shadow' || type === 'boxShadow';
+  const isFontSize = type === 'fontSizes';
+  const isFontFamily = type === 'fontFamily' || type === 'fontFamilies';
 
-  const isFontWeight =
-    type === "fontWeight" ||
-    type === "fontWeights"
-
+  const isFontWeight = type === 'fontWeight' || type === 'fontWeights';
 
   const isTextStyle = isFontSize || isFontFamily || isFontWeight;
   const isEffectStyle = isBoxShadow;
 
   const tokenType = isColor
-    ? "PAINT"
+    ? 'PAINT'
     : isTextStyle
-      ? "TEXT"
-      : isEffectStyle
-        ? "EFFECT"
-        : "unknown";
+    ? 'TEXT'
+    : isEffectStyle
+    ? 'EFFECT'
+    : 'unknown';
 
   return tokenType;
 };
@@ -267,13 +276,15 @@ const convertToDSTokenMap = (pairs: Record<string, any>): DSTokenMap => {
   }, {});
 };
 
-export const flattenToPairs = (json: Record<string, any>): Record<string, any> => {
+export const flattenToPairs = (
+  json: Record<string, any>,
+): Record<string, any> => {
   const pairs = flattenJSON(json);
   return findTrueValues({ pairs });
 };
 
-export const convertDSToJSON = (json: Record<string, any>): DSTokenMap => {
-  if (!json || isEmpty(json)) return {}
+export const transformDStoJSON = (json: Record<string, any>): DSTokenMap => {
+  if (!json || isEmpty(json)) return {};
   const resolvedPairs = flattenToPairs(json);
   return convertToDSTokenMap(resolvedPairs);
 };
