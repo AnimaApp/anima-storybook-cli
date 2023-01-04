@@ -2,20 +2,43 @@
   "name": "anima-storybook-cli",
   "version": "0.5.0",
   "description": "Anima CLI for storybook",
-  "main": "./build/cli.js",
+  "main": "./dist/cli.js",
   "bin": {
-    "anima-storybook": "./build/cli.js"
+    "anima-storybook": "./dist/cli.js"
   },
   "engines": {
     "node": ">=14.0.0"
   },
   "files": [
     "/assets",
-    "/build"
+    "/dist"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AnimaApp/anima-storybook-cli"
+  },
+  "author": "Anima",
   "keywords": [
-    "cli"
+    "storybook-addons",
+    "storybook",
+    "addons",
+    "figma",
+    "cli",
+    "storybook-to-figma",
+    "anima",
+    "figma",
+    "design",
+    "design system"
   ],
+  "storybook": {
+    "displayName": "Anima Storybook to Figma",
+    "supportedFrameworks": [
+      "react",
+      "angular",
+      "vue"
+    ],
+    "icon": "https://user-images.githubusercontent.com/1323193/157461790-52dc5857-2520-4ea8-84d0-bbeed32b4657.png"
+  },
   "license": "MIT",
   "scripts": {
     "build": "tsc",
