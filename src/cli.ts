@@ -4,6 +4,9 @@ import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 
 import handleError from './handleError';
+import { initMonitoring } from './helpers/monitoring';
+
+initMonitoring();
 
 yargs(hideBin(process.argv))
   // Use the commands directory to scaffold.
