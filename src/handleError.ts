@@ -1,3 +1,4 @@
+import { captureException } from '@sentry/node';
 import chalk from 'chalk';
 import { EOL } from 'os';
 
@@ -11,6 +12,7 @@ const printMessage = (message: string) => {
 };
 
 export default async (message: string, error: Error): Promise<never> => {
+  captureException(error);
   if (message) {
     printMessage(message);
     process.exit(1);

@@ -49,6 +49,8 @@
     "lint:check": "eslint \"src/**/*.ts\""
   },
   "dependencies": {
+    "@sentry/node": "^7.29.0",
+    "@sentry/tracing": "^7.29.0",
     "@types/node-fetch": "^2.6.2",
     "archiver": "^5.3.1",
     "c12": "^0.2.13",
